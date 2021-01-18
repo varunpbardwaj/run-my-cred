@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+    <head>
+        <title>RUN MY CRED</title>
+        <link rel="icon" href="favicon.ico" sizes="16x16 32x32">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+        <style>
+            body {
+                padding: 2% 5% 5% 5%;
+                font-family: 'Nunito Sans', sans-serif;
+            }
+            .navbar {
+                border-radius: 70px;
+                padding-left: 30px;
+            }
+            #credContainer {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                margin: 20px 0px;
+                flex-wrap: wrap;
+            }
+            .credHolder {
+                width: calc(31%);
+                min-height: 100px;
+                max-width: auto;
+                background-color: rgba(33, 47, 31, 0.14);
+                margin: 0 10px 20px 10px;
+                border-radius: 4px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-start;
+                padding: 10px 20px 10px 20px; 
+            }
+            .texts {
+                margin-top: 5px;
+                margin-bottom: 5px;
+            }
+            .buttons {
+                width: 100%;
+                background-color: #000000;
+                border-radius: 4px;
+                margin-top: 15px;
+                margin-bottom: 5px;
+                padding: 5px;
+                text-align: center;
+                color: #FFF;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar bg-dark text-light">
+            RUN MY CRED
+        </nav>
+        <div id="credContainer">
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
+        <script>
+            window.addEventListener("load", async () => {
+                const getContainer = document.getElementById("credContainer");
+                let creds;
+
+                await fetch("http://localhost:2021/getCreds")
+                .then(async (response) => {
+                    creds = await response.json();
+                    console.log(creds);
+                });
+                
+                creds.map((data) => {
+                    const username = data.username;
+                    const password = data.password;
+                    getContainer.innerHTML = getContainer.innerHTML +
+                     `<div class='credHolder'><text class='texts'>User:<b> ${data.type}</b>
+                        </text><text class='texts'>Username: ${data.username}</text><div class='buttons'
+                        onclick='show("http://localhost:3000", "${username}", "${password}")'>Localhost</div>
+                        <div class='buttons'
+                        onclick='show("https://admin.dev.edgenuityapp.com/", "${username}", "${password}")'>DEV env</div>
+                        <div class='buttons'
+                        onclick='show("https://lms-admin.lmsadmin-qa-app.wna.cloud/", "${username}", "${password}")'>QA env</div>                       
+                        </div>`
+                })
+            })
+            async function show(url, username, password) {
+                const apiObj = {
+                    url,
+                    username,
+                    password
+                }
+                fetch("http://localhost:2021", {
+                method: "POST",
+                headers: { "Content-Type": "application/json"},
+                body: JSON.stringify(apiObj),
+              }).then(async (response) => {
+                  console.log(await response.json())
+              });
+            }
+        </script>
+    </body>
+</html>
